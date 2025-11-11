@@ -3,7 +3,7 @@ const path =require('path');
 const express = require('express');
 const connectDB = require('./config/db.js');
 const app = express();
-const cors = require('cors');
+
 
 //connection to database
 connectDB();
@@ -16,7 +16,12 @@ app.use(express.urlencoded({ extended: false }));
 
 // Define routes
 const chatRoutes = require('./routes/chats.js');
+const fieldOfStudyRoutes = require('./routes/field_of_study.js');
+
+
 app.use('/api/chats', chatRoutes);
+app.use('/api/fields_of_study', fieldOfStudyRoutes);
+
 
 // Server
 const PORT = process.env.PORT || 3000;
