@@ -5,7 +5,6 @@ const connectDB = require('./config/db.js');
 const app = express();
 const cors = require('cors');
 const seenRoutes = require('./routes/Seen_Messages')
-const chatRoutes = require('./routes/chats.js');
 const conversationRoutes = require('./routes/conversationRoutes');
 //connection to database
 connectDB();
