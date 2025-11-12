@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const uri = process.env.MONGODB;
+const uri = process.env.MONGDODB;
 
 module.exports = async function connectDB() {
     try {
