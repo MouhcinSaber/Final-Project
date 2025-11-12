@@ -1,4 +1,4 @@
-const messages = require("../models/UserProfile");
+const messages = require("../models/User");
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 
@@ -82,4 +82,4 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { getAuth, createAuth, updateAuth, deleteUserProfile, login, register };
+module.exports = { getAuth, createAuth, updateAuth, deleteUserProfile, login };
