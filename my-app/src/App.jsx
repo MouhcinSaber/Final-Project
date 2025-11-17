@@ -8,29 +8,27 @@ function App() {
 
   return (
     <>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-      </style>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+       
+      <ul>
+        <li>
+          <Link to="/chats" > Chats</Link>
+
+        </li>
+        <li>
+          <Link to="/profil" > profil</Link>
+        </li>
+        <li>
+          <Link to="/profil/123" > other profil</Link>
+        </li>
+      </ul>
+   
+                <Routes>
+                    <Route path="/chats" element={<Chats/>} />
+                    <Route path="/profil" element={<Profil/>} />
+                    <Route path="/profil/:id" element={<OtherProfil/>} />
+                    </Routes>
+        </div>
     </>
   )
 }
