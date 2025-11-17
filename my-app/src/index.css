@@ -11,6 +11,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --backround-color: #F2F2F2;
+  --womanChat-color: #F23D7F;
+  --ManChat-color: #3D9DF2;
+  --teacher-color: #27F293;
+  --desing-color: #79BAF2;
+}
+
+.inter_font {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-style: normal;
 }
 
 a {
