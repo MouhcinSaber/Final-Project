@@ -10,11 +10,7 @@ f.	email
 g.	Gender
 h.	Profile picture
 i.	Conversations*/
-    _id : {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        unique: true,
-    },
+    
     Password : {
         type: String,
         required: true,
