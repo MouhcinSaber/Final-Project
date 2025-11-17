@@ -24,6 +24,10 @@ i.	Conversations*/
         type: String,
         required: true,
     },
+    Type_User: {
+        type: String,
+        required: true,
+    },
     Field_of_study : {
         type: String,
         required: true,
