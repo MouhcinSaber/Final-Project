@@ -12,9 +12,9 @@ const ConversationSchema = new mongoose.Schema({
         ref:'Seen'
     },
     Theme_id : {
-        type: mongoose.Schema.Types.ObjectId, 
+        type: String, 
         required: true,
-        ref:'Theme'
+       
     }
 }, { timestamps: true });
 module.exports = mongoose.model('Conversation', ConversationSchema);
