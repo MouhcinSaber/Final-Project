@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE } from "../../settings";
+import './Profil.css';
+
 function Profil() {
     const { id: paramId } = useParams();
     const [user, setUser] = useState(null);
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+ 
+
 
     // Helper to safely decode JWT payload and extract user id
     const getUserIdFromToken = (token) => {
@@ -88,13 +92,13 @@ function Profil() {
     const avatar = user.Profile_picture || "/avatars/default.png";
 
     return (
-        <div >
+        <div className="profilcontainer">
             <div >
                 <img src={avatar} alt={user.Username} onError={(e)=>{e.currentTarget.onerror=null; e.currentTarget.src='/avatars/default.png'}}/>
                 <div >
                     <h2 >{user.Username}</h2>
-                    <div>{user.Field_of_study} • {user.University_name}</div>
-                    <div >{user.email}</div>
+                    <div className="study">{user.Field_of_study} • {user.University_name}</div>
+                    <div className="email">{user.email}</div>
                     <div>
                         <div><strong>{conversations.length}</strong> conversations</div>
                         <div><strong>{user.Type_User || 'User'}</strong></div>

@@ -7,6 +7,7 @@ function Chats() {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [query, setQuery] = useState("");
+    // const token = useSelector(state => state.user.token);
 
   
 
