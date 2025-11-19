@@ -73,7 +73,7 @@ const login = async (req, res) => {
         if (match) {
             //token generation
             const token = JWT.sign({ user: { id: auth._id } }, process.env.JWT_SECRET, { expiresIn: '24h' });
-            res.json({ message: 'Login successful', token });
+            res.json({ message: 'Login successful', token, user: auth });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }

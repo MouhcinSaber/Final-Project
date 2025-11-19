@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE } from "../../settings";
+
 function Otherprofiles() {
    //get other users profiles by id
     const { id: paramId } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+   // const token = useSelector(state => state.user.token);
     useEffect(() => {
         const controller = new AbortController();
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
