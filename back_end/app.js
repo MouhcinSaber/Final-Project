@@ -9,6 +9,16 @@ const conversationRoutes = require('./routes/conversationRoutes');
 //connection to database
 connectDB();
 
+//cors
+
+
+const corsOption={
+    origin:['http://localhost:5173'],
+    credentials:true,
+};
+app.use(cors(corsOption));
+//middleware
+
 
 
 
@@ -19,6 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 const chatRoutes = require('./routes/chats.js');
 const fieldOfStudyRoutes = require('./routes/field_of_study.js');
 const authentificationRoutes = require('./routes/Authentification.js');
+
 
 // Define routes
 app.use('/api/conversations', conversationRoutes);

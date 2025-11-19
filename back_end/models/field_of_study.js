@@ -20,9 +20,9 @@ const Field_of_Study_Schema = new mongoose.Schema({
         ref:'User'
     },
     Field_Theme : {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
-        ref:'Theme'
+       
     }
 }, { timestamps: true });
 
