@@ -1,13 +1,20 @@
-import { combineReducers } from "redux";
-import userReducer from "./features/userSlice";
+import { createSlice } from "@reduxjs/toolkit";
+
+
 
 const initialState = {
-    user: null, 
-    token: null
+    user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null, 
+    token: localStorage.getItem("token") ||null,
 };
 
-const rootReducer = combineReducers({
-    user: userReducer
+const rootReducer = createSlice({
+    name:"appReducer",
+     initialState,
+     reducers:{
+  /*  login: (state = {}, action) => state,
+    logout: (state = {}, action) => state,*/
+     }
 });
 
 export default rootReducer;
+

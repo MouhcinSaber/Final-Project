@@ -26,7 +26,7 @@ i.	Conversations*/
     },
     Type_User: {
         type: String,
-        required: true,
+        required: false,
     },
     Field_of_study : {
         type: String,
