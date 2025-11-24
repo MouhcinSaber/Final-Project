@@ -3,13 +3,11 @@ import userReducer from "./features/userSlice";
 
 const initialState = {
     user: null, 
-    token: 
-
+    token: null
 };
 
 const rootReducer = combineReducers({
-    login: (state = {}, action) => state,
-    logout: (state = {}, action) => state,
+    user: userReducer
 });
 
 export default rootReducer;
