@@ -4,7 +4,7 @@ const messages = require("../models/messages");
 const getMessagesByConversationId = async (req, res) => {
     const { conversationId } = req.params;
     try {
-        const msgs = await messages.find({ conversation_id: conversationId });
+        const msgs = await messages.find({ });
         res.status(200).json(msgs);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -12,7 +12,8 @@ const getMessagesByConversationId = async (req, res) => {
 };
 //post envoyer un message
 const sendMessage = async (req, res) => {
-    const { conversation_id, sender_id, type, content } = req.body;
+    const {conversation_id} = req.params;
+    const {sender_id, type, content } = req.body;
     try {
         const newMessage = new messages({
             conversation_id,
