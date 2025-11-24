@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API_BASE } from '../../settings';
-import { useSelector } from 'react-redux';
+import './Conversation.css';
 
 export default function Conversation() {
   const [messages, setMessages] = useState([]);
@@ -11,6 +11,8 @@ export default function Conversation() {
   const [query, setQuery] = useState("");
   const { id } = useParams();
   const [input, setInput] = useState("");
+  const conversationId = id;
+  const sender_id = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : "6912961b5c06c48e6269e276";
 
   // const token = useSelector((state) => state.user.token);
   useEffect(() => {
@@ -51,17 +53,21 @@ export default function Conversation() {
       controller.abort();
     };
   }, [id]);
+
+
   const sendMessage = async (text) => {
     
     const token = localStorage.getItem("token");
+    const sender_id = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : "6912961b5c06c48e6269e276";
+    console.log(sender_id); 
     try {
-      const res = await fetch(`${API_BASE}/api/chats`, {
+      const res = await fetch(`${API_BASE}/api/chats/${conversationId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` })
         },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({sender_id, type:"Txt", content: text }),
       });
 
       if (!res.ok) {
@@ -84,7 +90,7 @@ export default function Conversation() {
   };
 
   return (
-    <div>
+    <div className="conversation-root">
       <div className='Nav-bar'>
         <h2>Conversation ID: {id}</h2>
         <div>
@@ -102,10 +108,13 @@ export default function Conversation() {
             .filter((msg) =>
               msg.content.toLowerCase().includes(query.trim().toLowerCase()))
             .map((msg) => (
-              <div key={msg._id} className="message-item">
-                <p><strong>{msg.senderName}:</strong> {msg.content}</p>
-                <span className="timestamp">{new Date(msg.timestamp).toLocaleString()}</span>
-              </div>
+              <div 
+            key={msg._id} 
+            className={`message-item ${msg.sender_id === sender_id ? 'my-message' : 'other-message'}`}
+          >
+            <p><strong>{msg.senderName}:</strong> {msg.content}</p>
+            <span className="timestamp">{msg.time_sent}</span>
+          </div>
             ))}
         </div>
         <form onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
