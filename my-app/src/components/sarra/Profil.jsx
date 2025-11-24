@@ -93,7 +93,7 @@ function Profil() {
 
     return (
         <div className="profilcontainer">
-            <div >
+            <div className="profil">
                 <img src={avatar} alt={user.Username} onError={(e)=>{e.currentTarget.onerror=null; e.currentTarget.src='/avatars/default.png'}}/>
                 <div >
                     <h2 >{user.Username}</h2>

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE } from "../../settings";
+import './Chats.css';
 
 function Chats() {
    const [conversations, setConversations] = useState([]);
