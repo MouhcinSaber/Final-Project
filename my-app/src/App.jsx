@@ -28,9 +28,7 @@ function App() {
           <li>
             <Link to="/profil" > profil</Link>
           </li>
-          <li>
-            <Link to="/profil/691b2b1ea5247d0085dc114f" > other profil</Link>
-          </li>
+        
         </ul>
 
         <Routes>
