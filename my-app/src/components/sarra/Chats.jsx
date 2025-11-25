@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { API_BASE } from "../../settings";
 import './Chats.css';
 
@@ -8,6 +8,9 @@ function Chats() {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [query, setQuery] = useState("");
+   const [searchResults, setSearchResults] = useState([]);
+   const [selectedUser, setSelectedUser] = useState(null);
+   const navigate = useNavigate();
     // const token = useSelector(state => state.user.token);
 
   
@@ -18,7 +21,7 @@ function Chats() {
       const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
       const userId = user?._id;
       console.log("Current User ID:", userId);
-      const fetchConversations = async () => {
+         const fetchConversations = async () => {
          setLoading(true);
          setError(null);
          try {
@@ -50,6 +53,37 @@ function Chats() {
       return () => controller.abort();
    }, [API_BASE]);
 
+      // search users when query changes (simple client-side search calling the users endpoint)
+      useEffect(() => {
+         if (!query || query.trim().length < 2) {
+            setSearchResults([]);
+            setSelectedUser(null);
+            return;
+         }
+
+         const controller = new AbortController();
+         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+         const fetchUsers = async () => {
+            try {
+               const res = await fetch(`${API_BASE}/api/authentification`, {
+                  headers: token ? { Authorization: `Bearer ${token}` } : {},
+                  signal: controller.signal,
+               });
+               if (!res.ok) {
+                  return setSearchResults([]);
+               }
+               const users = await res.json();
+               const q = query.trim().toLowerCase();
+               const matches = Array.isArray(users) ? users.filter(u => (u.Username || "").toLowerCase().includes(q)) : [];
+               setSearchResults(matches);
+            } catch (e) {
+               if (e.name !== 'AbortError') setSearchResults([]);
+            }
+         };
+         fetchUsers();
+         return () => controller.abort();
+      }, [query]);
+
    const filtered = useMemo(() => {
       return conversations.filter((c) => {
          const themeName = c?.Theme_id?.Name || c?.Theme_id?.name || "";
@@ -80,7 +114,44 @@ function Chats() {
       <div className="chats-container">
          <header className="chats-header">
             <h2>Chats</h2>
-            <button className="new-chat">New</button>
+            <button className="new-chat" onClick={async () => {
+               // If a user is selected from search, create or open conversation with them
+               const user = selectedUser;
+               const me = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : null;
+               if (!user) return alert('Select a user from search first');
+
+               // check if conversation already exists between users
+               const existing = conversations.find(conv => {
+                  const users = conv.users || conv.Users || [];
+                  const userIds = users.map(u => (u._id ? String(u._id) : String(u)));
+                  return userIds.includes(String(user._id)) && userIds.includes(String(me));
+               });
+               if (existing) {
+                  navigate(`/chats/${existing._id}`);
+                  return;
+               }
+
+               // create new conversation
+               try {
+                  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+                  const body = { Messages: [], Seen_messages_id: null, Theme_id: user._id, users: [me, user._id] };
+                  const res = await fetch(`${API_BASE}/api/conversations`, {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                        ...(token && { Authorization: `Bearer ${token}` })
+                     },
+                     body: JSON.stringify(body),
+                  });
+                  if (!res.ok) throw new Error('Failed to create conversation');
+                  const created = await res.json();
+                  setConversations(prev => [created, ...prev]);
+                  navigate(`/chats/${created._id}`);
+               } catch (err) {
+                  console.error(err);
+                  alert('Could not create conversation');
+               }
+            }}>New</button>
          </header>
 
          <div className="chats-search">
@@ -90,6 +161,17 @@ function Chats() {
                value={query}
                onChange={(e) => setQuery(e.target.value)}
             />
+            {/* search results dropdown */}
+            {searchResults.length > 0 && (
+               <ul className="search-results">
+                  {searchResults.map(u => (
+                     <li key={u._id} className={`search-item ${selectedUser && selectedUser._id === u._id ? 'selected' : ''}`} onClick={() => { setSelectedUser(u); setQuery(u.Username); setSearchResults([]); }}>
+                        <img src={u.Profile_picture || '/avatars/default.png'} alt={u.Username} style={{ width: 28, height: 28, borderRadius: 14, marginRight: 8 }} />
+                        <span>{u.Username}</span>
+                     </li>
+                  ))}
+               </ul>
+            )}
          </div>
 
          {loading && <div style={{ padding: 12 }}>Loading…</div>}
