@@ -15,17 +15,19 @@ function Chats() {
    useEffect(() => {
       const controller = new AbortController();
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-
+      const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+      const userId = user?._id;
+      console.log("Current User ID:", userId);
       const fetchConversations = async () => {
          setLoading(true);
          setError(null);
          try {
-            const res = await fetch(`${API_BASE}/api/conversations`, {
+           const res = await fetch(`${API_BASE}/api/conversations/user/${userId}`, {
                method: "GET",
                headers: token
                   ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
                   : { "Content-Type": "application/json" },
-               signal: controller.signal,
+               
             });
 
             if (!res.ok) {
@@ -34,8 +36,9 @@ function Chats() {
             }
 
             const data = await res.json();
-            // Ensure array
-            setConversations(Array.isArray(data) ? data : []);
+            // Filter conversations for current user
+           
+            setConversations(data);
          } catch (err) {
             if (err.name !== "AbortError") setError(err.message || "Unknown error");
          } finally {
@@ -99,12 +102,12 @@ function Chats() {
                const lastContent = lastMsg ? lastMsg.content : "No messages yet";
                const lastTime = lastMsg ? formatTime(lastMsg.time_sent || lastMsg.createdAt || c.updatedAt || c.createdAt) : formatTime(c.updatedAt || c.createdAt);
                const unread = msgs.filter((m) => m.status === "Not Seen").length;
-               const name = c?.Theme_id?.Name || c?.Theme_id?.name || (lastMsg?.sender_id?.Username ?? lastMsg?.sender_id) || `Conversation ${idx + 1}`;
-               const avatar = c?.Theme_id?.avatar || c?.Profile_picture || "/avatars/default.png";
+               const name = lastMsg?.sender_id?.Username || lastMsg?.sender_id || (c?.Theme_id?.Name || c?.Theme_id?.name) || `Conversation ${idx + 1}`;
+               const avatar = lastMsg?.sender_id?.Profile_picture || c?.Theme_id?.avatar || c?.Profile_picture || "/avatars/default.png";
 
                return (
                   <li key={c._id || idx} className="chat-item">
-                     <Link to={`/chat/${c._id || idx}`} className="chat-link">
+                     <Link to={`/chats/${c._id || idx}`} className="chat-link">
 
                         <div className="chat-meta">
                            <div className="chat-top">

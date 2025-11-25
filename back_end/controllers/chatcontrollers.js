@@ -1,15 +1,25 @@
 const messages = require("../models/messages");
+const Conversation = require("../models/Conversation");
 
-//get afficher les messages d'une conversation
+
+// Controller: get messages by conversation ID
 const getMessagesByConversationId = async (req, res) => {
-    const { conversationId } = req.params;
+    const { conversation_id } = req.params;
     try {
-        const msgs = await messages.find({ });
+        // Filter messages by conversationId and populate sender info
+        const msgs = await messages.find({ conversation_id })
+            .populate({ path: 'sender_id', model: 'UserProfile', select: 'Username Profile_picture' });
+
+        if (!msgs || msgs.length === 0) {
+            return res.status(404).json({ message: 'No messages found for this conversation.' });
+        }
+
         res.status(200).json(msgs);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
 //post envoyer un message
 const sendMessage = async (req, res) => {
     const {conversation_id} = req.params;
@@ -21,8 +31,34 @@ const sendMessage = async (req, res) => {
             type,
             content
         });
-        await newMessage.save();
-        res.status(201).json(newMessage);
+    
+        //quand on ajoute un message array Messages s'ajoute automatiquement
+    
+        let savedMsg = await newMessage.save();
+
+        // populate sender info before returning
+        try {
+            savedMsg = await savedMsg.populate({ path: 'sender_id', model: 'UserProfile', select: 'Username Profile_picture' });
+        } catch (popErr) {
+            console.error('Failed to populate sender on saved message:', popErr);
+        }
+
+        // push the saved message into the Conversation.Messages array
+        try {
+            const conv = await Conversation.findByIdAndUpdate(
+                conversation_id,
+                { $push: { Messages: savedMsg } },
+                { new: true }
+            );
+            // if conversation not found, still return the saved message but log a warning
+            if (!conv) {
+                console.warn(`Conversation ${conversation_id} not found when pushing message`);
+            }
+        } catch (pushErr) {
+            console.error('Failed to push message into conversation:', pushErr);
+        }
+
+        res.status(201).json(savedMsg);
     }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });

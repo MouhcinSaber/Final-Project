@@ -4,7 +4,7 @@ const { getMessagesByConversationId, sendMessage, updateMessage, deleteMessage }
 const autMiddleware = require('../midllewares/autMiddleware');
 
 //get messages by conversation id
-router.get('/',/*autMiddleware,*/getMessagesByConversationId) ;
+router.get('/:conversation_id',/*autMiddleware,*/getMessagesByConversationId) ;
 //post send message
 router.post('/:conversation_id', /*autMiddleware,*/ sendMessage);
     

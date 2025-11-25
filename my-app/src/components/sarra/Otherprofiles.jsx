@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE } from "../../settings";
-
+import './Otherprofiles.css';
 function Otherprofiles() {
    //get other users profiles by id
     const { id: paramId } = useParams();

@@ -4,6 +4,7 @@ const conversationController = require('../controllers/Conversation');
 const autMiddleware = require('../midllewares/autMiddleware');
 // CRUD routes
 router.get('/',autMiddleware ,conversationController.getAllConversations);
+router.get('/user/:userId',autMiddleware ,conversationController.getConversationByUserId);
 router.get('/:id',autMiddleware ,conversationController.getConversationById);
 router.post('/', autMiddleware ,conversationController.createConversation);
 router.put('/:id', autMiddleware ,conversationController.updateConversation);

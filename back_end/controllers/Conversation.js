@@ -23,22 +23,41 @@ exports.getConversationById = async (req, res) => {
         if (!conversation) {
             return res.status(404).json({ error: 'Conversation not found' });
         }
+        console.log("Fetched Conversation:", conversation);
         res.status(200).json(conversation);
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: 'Error fetching conversation', details: error.message });
     }
 };
+//// Get one conversation by userId
+exports.getConversationByUserId = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const conversations = await Conversation.find({users: userId})
+            .populate('Seen_messages_id')
+            .populate('Theme_id');
+
+        console.log("Fetched Conversations for User ID:", userId, conversations);
+        res.status(200).json(conversations);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: 'Error fetching conversation by user ID', details: error.message });
+    }
+};
+
+
 
 // Create a new conversation
 exports.createConversation = async (req, res) => {
     try {
-        const { Messages, Seen_messages_id, Theme_id } = req.body;
+        const { Messages, Seen_messages_id, Theme_id,users } = req.body;
 
         const newConversation = new Conversation({
             Messages,
             Seen_messages_id,
-            Theme_id
+            Theme_id,
+            users
         });
 
         const savedConversation = await newConversation.save();

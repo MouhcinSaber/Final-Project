@@ -15,6 +15,11 @@ const ConversationSchema = new mongoose.Schema({
         type: String, 
         required: true,
        
-    }
+    },
+  users: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserProfile',
+    }]
+
 }, { timestamps: true });
 module.exports = mongoose.model('Conversation', ConversationSchema);
