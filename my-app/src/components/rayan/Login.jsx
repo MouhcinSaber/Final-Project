@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+import { API_BASE } from "../../settings";
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,10 +14,10 @@ export default function Login() {
 
     try {
       // Example backend request
-      const res = await fetch('/api/authentification/login', {
+      const res = await fetch(`${API_BASE}/api/authentification/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, Password: password }),
       })
 
       const data = await res.json()
@@ -27,7 +27,11 @@ export default function Login() {
         return
       }
 
-      setSuccess('Login successful!')
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("user", JSON.stringify(data.user))
+      // Redirect to chats page
+      window.location.href = '/chats'
+
     } catch (err) {
       setError('Server error, try again later.')
     }
@@ -42,7 +46,6 @@ export default function Login() {
           <input
             id="email"
             type="email"
-            name="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -55,7 +58,6 @@ export default function Login() {
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              name="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
