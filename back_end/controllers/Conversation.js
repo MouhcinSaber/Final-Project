@@ -63,6 +63,7 @@ exports.createConversation = async (req, res) => {
         const savedConversation = await newConversation.save();
         res.status(201).json(savedConversation);
     } catch (error) {
+        console.log(error)
         res.status(400).json({ error: 'Failed to create conversation', details: error.message });
     }
 };

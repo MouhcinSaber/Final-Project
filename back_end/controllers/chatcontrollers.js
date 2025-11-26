@@ -10,9 +10,9 @@ const getMessagesByConversationId = async (req, res) => {
         const msgs = await messages.find({ conversation_id })
             .populate({ path: 'sender_id', model: 'UserProfile', select: 'Username Profile_picture' });
 
-        if (!msgs || msgs.length === 0) {
-            return res.status(404).json({ message: 'No messages found for this conversation.' });
-        }
+        // if (!msgs || msgs.length === 0) {
+        //     return res.status(404).json({ message: 'No messages found for this conversation.' });
+        // }
 
         res.status(200).json(msgs);
     } catch (error) {

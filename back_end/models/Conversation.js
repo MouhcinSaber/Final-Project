@@ -8,7 +8,7 @@ const ConversationSchema = new mongoose.Schema({
     },
     Seen_messages_id : {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
         ref:'Seen'
     },
     Theme_id : {
