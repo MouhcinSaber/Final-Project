@@ -18,7 +18,7 @@ function App() {
   return (
     <>
       <div>
-       
+
 
         <ul>
           <li>
@@ -34,9 +34,9 @@ function App() {
         </ul>
 
         <Routes>
-          <Route path="/" element={<HeroPage/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/register " element={<Register/>} />
+          <Route path="/" element={<HeroPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
           <Route path="/chats" element={<Chats />} />
           <Route path="/chats/:id" element={<Conversation />} />
           <Route path="/profil" element={<Profil />} />
