@@ -4,72 +4,66 @@ import { API_BASE } from "../../settings";
 import './Chats.css';
 
 function Chats() {
+  const navigate = useNavigate();
+
+  // Get token and user from storage
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+  const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+  const [user, setUser] = useState(token && storedUser ? JSON.parse(storedUser) : null);
+
   const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [usersMap, setUsersMap] = useState({});
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [usersMap, setUsersMap] = useState({});
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-  // Fetch conversations and all users map
+  // Fetch conversations and users map if logged in
   useEffect(() => {
+    if (!user || !token) return;
+
     const controller = new AbortController();
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
-    const userId = user?._id;
-
-    const fetchConversations = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/conversations/user/${userId}`, {
-          method: "GET",
-          headers: token
-            ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-            : { "Content-Type": "application/json" },
+        // Fetch conversations
+        const res = await fetch(`${API_BASE}/api/conversations/user/${user._id}`, {
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
-        const data = await res.json();
-        setConversations(data);
+        if (!res.ok) throw new Error(`Failed to fetch conversations: ${res.status}`);
+        const convs = await res.json();
+        setConversations(convs);
 
-        // Fetch users to map IDs
+        // Fetch all users
         const usersRes = await fetch(`${API_BASE}/api/authentification`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (usersRes.ok) {
-          const users = await usersRes.json();
-          const map = {};
-          if (Array.isArray(users)) users.forEach(u => { if (u?._id) map[u._id] = u; });
-          setUsersMap(map);
-        }
+        if (!usersRes.ok) throw new Error(`Failed to fetch users: ${usersRes.status}`);
+        const users = await usersRes.json();
+        const map = {};
+        if (Array.isArray(users)) users.forEach(u => { if (u?._id) map[u._id] = u; });
+        setUsersMap(map);
       } catch (err) {
         if (err.name !== "AbortError") setError(err.message || "Unknown error");
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchConversations();
+    fetchData();
     return () => controller.abort();
-  }, []);
+  }, [user, token]);
 
   // Search users
   useEffect(() => {
-    if (!query || query.trim().length < 2) {
+    if (!query || query.trim().length < 2 || !token) {
       setSearchResults([]);
       setSelectedUser(null);
       return;
     }
 
     const controller = new AbortController();
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-
     const fetchUsers = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/authentification`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
         if (!res.ok) return setSearchResults([]);
@@ -86,33 +80,30 @@ function Chats() {
 
     fetchUsers();
     return () => controller.abort();
-  }, [query]);
+  }, [query, token]);
 
-  // Filter conversations based on search query (includes partner usernames)
   const filteredConversations = useMemo(() => {
-    const me = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : null;
-
+    if (!user) return [];
     return conversations.filter(c => {
       const themeName = c?.Theme_id?.Name || c?.Theme_id?.name || "";
       const msgs = Array.isArray(c.Messages) ? c.Messages : [];
       const last = msgs.length ? msgs[msgs.length - 1].content : "";
 
-      // Determine partner
       const usersArr = c.users || c.Users || [];
       let partner = null;
       if (Array.isArray(usersArr) && usersArr.length) {
         const entry = usersArr.find(u => {
           const uid = u?._id ? String(u._id) : String(u);
-          return uid !== String(me);
+          return uid !== String(user._id);
         });
         partner = entry?._id ? entry : usersMap[String(entry)];
       }
-      const partnerName = partner?.Username || "";
 
+      const partnerName = partner?.Username || "";
       const searchable = `${themeName} ${last} ${partnerName}`.toLowerCase();
       return searchable.includes(query.trim().toLowerCase());
     });
-  }, [conversations, query, usersMap]);
+  }, [conversations, query, usersMap, user]);
 
   const formatTime = (iso) => {
     if (!iso) return "";
@@ -126,16 +117,15 @@ function Chats() {
   };
 
   const handleNewChat = async () => {
-    const user = selectedUser;
-    const me = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : null;
-    if (!user) return alert("Select a user from search first");
+    if (!selectedUser) return alert("Select a user from search first");
 
     // Check existing conversation
     const existing = conversations.find(conv => {
       const users = conv.users || conv.Users || [];
       const userIds = users.map(u => (u ? String(u) : ""));
-      return userIds.includes(String(user._id)) && userIds.includes(String(me));
+      return userIds.includes(String(selectedUser._id)) && userIds.includes(String(user._id));
     });
+
     if (existing) {
       navigate(`/chats/${existing._id}`);
       setSelectedUser(null);
@@ -145,11 +135,15 @@ function Chats() {
 
     // Create new conversation
     try {
-      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const body = { Messages: [], Seen_messages_id: null, Theme_id: user._id, users: [me, user._id] };
+      const body = {
+        Messages: [],
+        Seen_messages_id: null,
+        Theme_id: selectedUser._id,
+        users: [user._id, selectedUser._id]
+      };
       const res = await fetch(`${API_BASE}/api/conversations`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Failed to create conversation");
@@ -164,6 +158,9 @@ function Chats() {
     }
   };
 
+ 
+
+  // Logged in view
   return (
     <div className="chats-container">
       <header className="chats-header">
@@ -178,7 +175,6 @@ function Chats() {
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
-
           {searchResults.length > 0 && (!selectedUser || selectedUser.Username !== query) && (
             <ul className="search-results">
               {searchResults.map(u => (
@@ -190,7 +186,7 @@ function Chats() {
                     setQuery(u.Username);
                   }}
                 >
-                  <img src={u.Profile_picture || "/avatars/default.png"} alt={u.Username} style={{ width: 28, height: 28, borderRadius: 14, marginRight: 8 }} />
+                  <img src={u.Profile_picture || "/avatars/default.png"} alt={u.Username} />
                   <span>{u.Username}</span>
                 </li>
               ))}
@@ -200,7 +196,6 @@ function Chats() {
         <button className="new-chat" onClick={handleNewChat}>New</button>
       </div>
 
-      {loading && <div style={{ padding: 12 }}>Loading…</div>}
       {error && <div style={{ padding: 12, color: "#a00" }}>Error: {error}</div>}
 
       <ul className="chats-list">
@@ -213,13 +208,12 @@ function Chats() {
             : formatTime(c.updatedAt || c.createdAt);
           const unread = msgs.filter(m => m.status === "Not Seen").length;
 
-          const me = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user"))._id : null;
           const usersArr = c.users || c.Users || [];
           let partner = null;
           if (Array.isArray(usersArr) && usersArr.length) {
             const entry = usersArr.find(u => {
               const uid = u?._id ? String(u._id) : String(u);
-              return uid !== String(me);
+              return uid !== String(user._id);
             });
             partner = entry?._id ? entry : usersMap[String(entry)];
           }
@@ -247,7 +241,7 @@ function Chats() {
             </li>
           );
         })}
-        {!loading && filteredConversations.length === 0 && <li className="no-results">No chats found.</li>}
+        {filteredConversations.length === 0 && <li className="no-results">No chats found.</li>}
       </ul>
     </div>
   );
