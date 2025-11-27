@@ -4,7 +4,7 @@ const ConversationSchema = new mongoose.Schema({
     Messages : {
         type: Array,
         required: true,
-        unique: true,
+       
     },
     Seen_messages_id : {
         type: mongoose.Schema.Types.ObjectId,
