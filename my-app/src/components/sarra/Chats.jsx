@@ -17,6 +17,7 @@ function Chats() {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [error, setError] = useState(null);
+  const [toast, setToast] = useState(""); // For temporary messages
 
   // Fetch conversations and users map if logged in
   useEffect(() => {
@@ -82,6 +83,7 @@ function Chats() {
     return () => controller.abort();
   }, [query, token]);
 
+  // Filter conversations for search query
   const filteredConversations = useMemo(() => {
     if (!user) return [];
     return conversations.filter(c => {
@@ -106,45 +108,57 @@ function Chats() {
     });
   }, [conversations, query, usersMap, user]);
 
+  // Create or navigate to conversation
   const handleNewChat = async () => {
-    if (!selectedUser) return alert("Select a user from search first");
+    if (!selectedUser) {
+      setToast("Select a user from search first");
+      return;
+    }
 
-    // Check existing conversation
+    // Normalize user IDs in existing conversations
     const existing = conversations.find(conv => {
-      const users = conv.users || conv.Users || [];
-      const userIds = users.map(u => (u ? String(u) : ""));
-      return userIds.includes(String(selectedUser._id)) && userIds.includes(String(user._id));
+      const usersArr = conv.users || conv.Users || [];
+      const ids = usersArr.map(u => (u?._id ? String(u._id) : String(u)));
+      return ids.includes(String(user._id)) && ids.includes(String(selectedUser._id)) && !conv.field ;
     });
 
     if (existing) {
+      setToast("Conversation already exists!");
       navigate(`/chats/${existing._id}`);
       setSelectedUser(null);
       setQuery("");
       return;
     }
 
-    // Create new conversation
+    // No conversation exists → create a new one
     try {
       const body = {
         Messages: [],
         Seen_messages_id: null,
         Theme_id: selectedUser._id,
-        users: [user._id, selectedUser._id]
+        users: [user._id, selectedUser._id],
       };
+
       const res = await fetch(`${API_BASE}/api/conversations`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(body),
       });
+
       if (!res.ok) throw new Error("Failed to create conversation");
+
       const created = await res.json();
       setConversations(prev => [created, ...prev]);
       navigate(`/chats/${created._id}`);
       setSelectedUser(null);
       setQuery("");
+      setToast("New conversation created!");
     } catch (err) {
       console.error(err);
-      alert("Could not create conversation");
+      setToast("Could not create conversation");
     }
   };
 
@@ -155,18 +169,20 @@ function Chats() {
     return d.toLocaleString();
   }
 
-  // Logged in view
   return (
     <div className="chats-container">
       <header className="chats-header">
         <h2>Chats</h2>
       </header>
 
+      {/* Toast message */}
+      {toast && <div className="toast">{toast}</div>}
+
       <div className="chats-search-container">
         <div className="chats-search">
           <input
             type="search"
-            placeholder="Search"
+            placeholder="Search users..."
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
@@ -188,7 +204,13 @@ function Chats() {
             </ul>
           )}
         </div>
-        <button className="new-chat" onClick={handleNewChat}>New</button>
+        <button
+          className="new-chat"
+          onClick={handleNewChat}
+          disabled={!selectedUser}
+        >
+          New
+        </button>
       </div>
 
       {error && <div style={{ padding: 12, color: "#a00" }}>Error: {error}</div>}
@@ -213,7 +235,7 @@ function Chats() {
             partner = entry?._id ? entry : usersMap[String(entry)];
           }
 
-          const nameResolved = partner?.Username || (c?.Theme_id?.Name || c?.Theme_id?.name) || `Conversation ${idx + 1}`;
+          const nameResolved = c?.field || partner?.Username || (c?.Theme_id?.Name || c?.Theme_id?.name) || `Conversation ${idx + 1}`;
           const avatar = partner?.Profile_picture || c?.Theme_id?.avatar || c?.Profile_picture || "/avatars/default.png";
 
           return (
