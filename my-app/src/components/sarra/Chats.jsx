@@ -76,6 +76,7 @@ function Chats() {
       } catch (e) {
         if (e.name !== "AbortError") setSearchResults([]);
       }
+    }
 
     fetchUsers();
     return () => controller.abort();
@@ -90,6 +91,7 @@ function Chats() {
 
       const usersArr = c.users || c.Users || [];
       let partner = null;
+
       if (Array.isArray(usersArr) && usersArr.length) {
         const entry = usersArr.find(u => {
           const uid = u?._id ? String(u._id) : String(u);
@@ -103,11 +105,6 @@ function Chats() {
       return searchable.includes(query.trim().toLowerCase());
     });
   }, [conversations, query, usersMap, user]);
-
-         const searchable = `${themeName} ${last} ${partnerName}`.toLowerCase();
-         return searchable.includes(query.trim().toLowerCase());
-      });
-   }, [conversations, query, usersMap]);
 
   const handleNewChat = async () => {
     if (!selectedUser) return alert("Select a user from search first");
@@ -139,35 +136,24 @@ function Chats() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(body),
       });
-      if (existing) {
-         navigate(`/chats/${existing._id}`);
-         setSelectedUser(null);
-         setQuery("");
-         return;
-      }
+      if (!res.ok) throw new Error("Failed to create conversation");
+      const created = await res.json();
+      setConversations(prev => [created, ...prev]);
+      navigate(`/chats/${created._id}`);
+      setSelectedUser(null);
+      setQuery("");
+    } catch (err) {
+      console.error(err);
+      alert("Could not create conversation");
+    }
+  };
 
-      // Create new conversation
-      try {
-         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-         const body = { Messages: [], Seen_messages_id: null, Theme_id: user._id, users: [me, user._id] };
-         const res = await fetch(`${API_BASE}/api/conversations`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
-            body: JSON.stringify(body),
-         });
-         if (!res.ok) throw new Error("Failed to create conversation");
-         const created = await res.json();
-         setConversations(prev => [created, ...prev]);
-         navigate(`/chats/${created._id}`);
-         setSelectedUser(null);
-         setQuery("");
-      } catch (err) {
-         console.error(err);
-         alert("Could not create conversation");
-      }
-   };
-
- 
+  // Helper function for formatting time
+  const formatTime = (time) => {
+    if (!time) return "";
+    const d = new Date(time);
+    return d.toLocaleString();
+  }
 
   // Logged in view
   return (
@@ -207,15 +193,15 @@ function Chats() {
 
       {error && <div style={{ padding: 12, color: "#a00" }}>Error: {error}</div>}
 
-         <ul className="chats-list">
-            {filteredConversations.map((c, idx) => {
-               const msgs = Array.isArray(c.Messages) ? c.Messages : [];
-               const lastMsg = msgs.length ? msgs[msgs.length - 1] : null;
-               const lastContent = lastMsg ? lastMsg.content : "No messages yet";
-               const lastTime = lastMsg
-                  ? formatTime(lastMsg.time_sent || lastMsg.createdAt || c.updatedAt || c.createdAt)
-                  : formatTime(c.updatedAt || c.createdAt);
-               const unread = msgs.filter(m => m.status === "Not Seen").length;
+      <ul className="chats-list">
+        {filteredConversations.map((c, idx) => {
+          const msgs = Array.isArray(c.Messages) ? c.Messages : [];
+          const lastMsg = msgs.length ? msgs[msgs.length - 1] : null;
+          const lastContent = lastMsg ? lastMsg.content : "No messages yet";
+          const lastTime = lastMsg
+            ? formatTime(lastMsg.time_sent || lastMsg.createdAt || c.updatedAt || c.createdAt)
+            : formatTime(c.updatedAt || c.createdAt);
+          const unread = msgs.filter(m => m.status === "Not Seen").length;
 
           const usersArr = c.users || c.Users || [];
           let partner = null;
@@ -227,8 +213,8 @@ function Chats() {
             partner = entry?._id ? entry : usersMap[String(entry)];
           }
 
-               const nameResolved = partner?.Username || (c?.Theme_id?.Name || c?.Theme_id?.name) || `Conversation ${idx + 1}`;
-               const avatar = partner?.Profile_picture || c?.Theme_id?.avatar || c?.Profile_picture || "/avatars/default.png";
+          const nameResolved = partner?.Username || (c?.Theme_id?.Name || c?.Theme_id?.name) || `Conversation ${idx + 1}`;
+          const avatar = partner?.Profile_picture || c?.Theme_id?.avatar || c?.Profile_picture || "/avatars/default.png";
 
           return (
             <li key={c._id || idx} className="chat-item">
