@@ -1,6 +1,9 @@
 const messages = require("../models/User");
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
+const ConversationSchema = require("../models/Conversation");
+const UserProfileSchema = require("../models/User")
+const field_of_study = require("../models/field_of_study");
 
 const getAuth = async (req, res) => {
     try {
@@ -30,8 +33,19 @@ const createAuth = async (req, res) => {
             Conversations
         });
         await newAuth.save();
+        const newuser = await UserProfileSchema.findOne({Username})
+        const newUserId= newuser._id.toString()
+        console.log(newUserId, newuser, newuser._id)
+        const updatedConversation = await ConversationSchema.findOneAndUpdate(
+                    { field: Field_of_study},
+                    { $push: { users: newUserId }},
+                    { new: true } // return the updated document
+                );
+                console.log(updatedConversation)
+        
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "Server error", error });
     }
 };

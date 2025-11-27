@@ -5,12 +5,13 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [fieldOfStudy, setFieldOfStudy] = useState('');
   const [universityName, setUniversityName] = useState('');
   const [gender, setGender] = useState('');
   const [conversations, setConversations] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [fieldOfStudy, setFieldOfStudy] = useState('');
+
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -47,7 +48,7 @@ export default function Register() {
       }
 
       // Redirect to chats page
-      window.location.href = '/chats';
+      window.location.href = '/login';
     } catch (err) {
       setError('Server error, try again later.');
     }
@@ -84,6 +85,16 @@ export default function Register() {
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </select>
+          <label>Fields of Study</label>
+          <select
+            value={fieldOfStudy}
+            onChange={(e) => setFieldOfStudy(e.target.value)}
+          >
+            <option value="">Select Field of Study</option>
+            <option value="Info">Info</option>
+            <option value="Medicine">Medicine</option>
+          </select>
+
         </div>
         <div>
           <label>Conversations (JSON array)</label>
