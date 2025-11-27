@@ -6,7 +6,7 @@ import Chats from './components/sarra/Chats';
 import Conversation from './components/Saber/Conversation';
 import Profil from './components/sarra/Profil';
 import Otherprofiles from './components/sarra/Otherprofiles';
-import { ChatInput } from './components/rayan/Hero_page';
+import  Heropage from './components/rayan/Hero_page';
 import Login from './components/rayan/Login';
 import Register from './components/rayan/Register';
 
@@ -26,7 +26,7 @@ function App() {
 
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<ChatInput />} />
+          <Route path="/" element={<Heropage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/chats" element={<Chats />} />
