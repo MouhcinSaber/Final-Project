@@ -1,5 +1,5 @@
 "use client"
-
+//hero-section
 import { useEffect, useState } from "react"
 import { ChatInput } from "./chat-input"
 

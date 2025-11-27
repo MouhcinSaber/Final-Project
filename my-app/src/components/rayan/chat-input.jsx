@@ -1,5 +1,5 @@
 "use client"
-
+//chat-input.jsx
 import { useState, useEffect } from "react"
 import { Paperclip, Send, X } from "lucide-react"
 
