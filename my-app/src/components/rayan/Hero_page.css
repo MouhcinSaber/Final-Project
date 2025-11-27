@@ -1,0 +1,64 @@
+.hero-page {
+    font-family: Arial, sans-serif;
+    color: #1d1d1d;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 40px;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar .nav-links a,
+.navbar .auth-links a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar .auth-links .register {
+    font-weight: bold;
+}
+
+.hero-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 40px;
+    background: #f7f7f7;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.hero-sub {
+    font-size: 1.4rem;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+.hero-image-wrap {
+    flex-shrink: 0;
+}
+
+.hero-image {
+    max-width: 480px;
+    border-radius: 20px;
+}
+
+.bottom-chat {
+    margin-top: 40px;
+    padding: 20px;
+}

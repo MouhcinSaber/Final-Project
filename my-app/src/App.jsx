@@ -6,7 +6,7 @@ import Chats from './components/sarra/Chats';
 import Conversation from './components/Saber/Conversation';
 import Profil from './components/sarra/Profil';
 import Otherprofiles from './components/sarra/Otherprofiles';
-import { ChatInput } from './components/rayan/Hero_page';
+import  Heropage from './components/rayan/Hero_page';
 import Login from './components/rayan/Login';
 import Register from './components/rayan/Register';
 
@@ -67,13 +67,13 @@ function App() {
 
       <main className="main-content">
         <Routes>
-          <Route path="/" element={user ? <ChatInput /> : <Login onLogin={handleLogin} />} />
-          <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Chats user={user} token={token} />} />
-          <Route path="/register" element={!user ? <Register onLogin={handleLogin} /> : <Chats user={user} token={token} />} />
-          <Route path="/chats" element={user ? <Chats user={user} token={token} /> : <Login onLogin={handleLogin} />} />
-          <Route path="/chats/:id" element={user ? <Conversation user={user} token={token} /> : <Login onLogin={handleLogin} />} />
-          <Route path="/profil" element={user ? <Profil user={user} token={token} /> : <Login onLogin={handleLogin} />} />
-          <Route path="/profil/:id" element={user ? <Otherprofiles user={user} token={token} /> : <Login onLogin={handleLogin} />} />
+          <Route path="/" element={<Heropage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/chats" element={<Chats />} />
+          <Route path="/chats/:id" element={<Conversation />} />
+          <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Otherprofiles />} />
         </Routes>
       </main>
     </div>
