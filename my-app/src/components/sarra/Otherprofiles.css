@@ -1,117 +1,81 @@
 /* Otherprofiles.css */
-.profilcontainer {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 25px 20px;
-    border-radius: 15px;
-    background-color: #eee;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    font-family: 'Arial', sans-serif;
-    color: #333;
-}
 
-.profil {
+/* Root container */
+.profile-root {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    border-radius: 20px;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: left;
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.profile-root:hover {
+    transform: translateY(-5px);
+}
+
+/* Error state */
+.profile-root.error {
+    background: #ff6b6b;
+    color: #fff;
     text-align: center;
 }
 
-.profil img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
+/* Header */
+.profile-root h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* User details */
+.profile-root p {
+    font-size: 1.1rem;
+    margin: 8px 0;
+}
+
+/* Profile picture */
+.profile-root img {
+    margin-top: 20px;
     border-radius: 50%;
-    border: 3px solid #4CAF50;
-    margin-bottom: 15px;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
 }
 
-.profil h2 {
-    font-size: 24px;
-    margin-bottom: 5px;
-    font-weight: bold;
+.profile-root img:hover {
+    transform: scale(1.05);
 }
 
-.profil .study {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 5px;
+/* Loading state */
+.profile-root::before {
+    content: '';
+    display: none;
 }
 
-.profil .email {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 15px;
-}
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    .profile-root {
+        padding: 20px;
+    }
 
-.profil .btn {
-    padding: 8px 18px;
-    margin: 5px;
-    border-radius: 25px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+    .profile-root h2 {
+        font-size: 1.5rem;
+    }
 
-.profil .btn.primary {
-    background-color: #FFCF71;
-    color: #fff;
-}
+    .profile-root p {
+        font-size: 1rem;
+    }
 
-.profil .btn.primary:hover {
-    background-color: #45a049;
-}
-
-.profil .btn:not(.primary) {
-    background-color: #eee;
-    color: #333;
-}
-
-.profil .btn:not(.primary):hover {
-    background-color: #45a049;
-}
-
-section {
-    margin-top: 25px;
-}
-
-section h3 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-}
-
-.no-conv {
-    font-size: 14px;
-    color: #888;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-.conv-item {
-    padding: 10px 15px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background-color: #f6f6f6;
-    transition: background 0.3s;
-}
-
-.conv-item:hover {
-    background-color: #e0f2f1;
-}
-
-.conv-title {
-    font-weight: bold;
-    margin-bottom: 3px;
-}
-
-.conv-last {
-    font-size: 13px;
-    color: #666;
+    .profile-root img {
+        width: 120px;
+        height: 120px;
+    }
 }

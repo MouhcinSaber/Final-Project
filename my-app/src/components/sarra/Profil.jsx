@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE } from "../../settings";
-import './Profil.css';
+import "./Profil.css";
 
 function Profil() {
     const { id: paramId } = useParams();
@@ -9,25 +9,29 @@ function Profil() {
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
- 
 
-
-    // Helper to safely decode JWT payload and extract user id
+    // Decode JWT safely
     const getUserIdFromToken = (token) => {
         if (!token) return null;
         try {
-            const parts = token.split('.');
+            const parts = token.split(".");
             if (parts.length !== 3) return null;
-            const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-            const json = JSON.parse(decodeURIComponent(escape(window.atob(payload))));
+
+            const payload = parts[1]
+                .replace(/-/g, "+")
+                .replace(/_/g, "/");
+
+            const json = JSON.parse(
+                decodeURIComponent(escape(window.atob(payload)))
+            );
+
             return json?.user?.id || json?.user?._id || null;
-        } catch (e) {
+        } catch {
             return null;
         }
     };
 
     useEffect(() => {
-        // Use id from route param if present, otherwise from JWT token
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         const tokenId = getUserIdFromToken(token);
         const id = paramId || tokenId;
@@ -40,48 +44,57 @@ function Profil() {
 
         const controller = new AbortController();
 
-        const fetchUserProfileAndConversations = async () => {
+        const fetchData = async () => {
             setLoading(true);
             setError(null);
+
             try {
-                // Fetch all user profiles then select by id (UserProfile collection)
-                const userRes = await fetch(`${API_BASE}/api/authentification`, {
+                // Fetch all users
+                const res = await fetch(`${API_BASE}/api/authentification`, {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
                     signal: controller.signal,
                 });
-                if (!userRes.ok) throw new Error(`Failed to fetch user profile: ${userRes.status}`);
-                const userProfiles = await userRes.json();
-                const found = Array.isArray(userProfiles) ? userProfiles.find((u) => u._id === id) : null;
-                if (!found) {
-                    throw new Error("User profile not found");
-                }
-                setUser(found);
 
-                // If user has conversation ids, fetch them in parallel
-                const convIds = Array.isArray(found.Conversations) ? found.Conversations : [];
+                if (!res.ok) throw new Error("Failed to fetch user profile");
+
+                const allUsers = await res.json();
+                const foundUser = allUsers.find((u) => u._id === id);
+
+                if (!foundUser) throw new Error("User profile not found");
+                setUser(foundUser);
+
+                // Fetch conversations
+                const convIds = Array.isArray(foundUser.Conversations)
+                    ? foundUser.Conversations
+                    : [];
+
                 const convs = await Promise.all(
                     convIds.map(async (convId) => {
                         try {
-                            const r = await fetch(`${API_BASE}/api/conversations/${convId}`, {
-                                headers: token ? { Authorization: `Bearer ${token}` } : {},
-                                signal: controller.signal,
-                            });
-                            if (!r.ok) return null;
-                            return await r.json();
-                        } catch (e) {
+                            const convRes = await fetch(
+                                `${API_BASE}/api/conversations/${convId}`,
+                                {
+                                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                    signal: controller.signal,
+                                }
+                            );
+                            if (!convRes.ok) return null;
+                            return await convRes.json();
+                        } catch {
                             return null;
                         }
                     })
                 );
+
                 setConversations(convs.filter(Boolean));
             } catch (err) {
-                if (err.name !== "AbortError") setError(err.message || "Error");
+                if (err.name !== "AbortError") setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUserProfileAndConversations();
+        fetchData();
         return () => controller.abort();
     }, [paramId]);
 
@@ -94,40 +107,41 @@ function Profil() {
     return (
         <div className="profilcontainer">
             <div className="profil">
-                <img src={avatar} alt={user.Username} onError={(e)=>{e.currentTarget.onerror=null; e.currentTarget.src='/avatars/default.png'}}/>
-                <div >
-                    <h2 >{user.Username}</h2>
-                    <div className="study">{user.Field_of_study} • {user.University_name}</div>
-                    <div className="email">{user.email}</div>
-                    <div>
-                        <div><strong>{conversations.length}</strong> conversations</div>
-                        <div><strong>{user.Type_User || 'User'}</strong></div>
-                    </div>
+                
+                {/* Avatar */}
+                <img
+                    src={avatar}
+                    alt={user.Username}
+                    onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/avatars/default.png";
+                    }}
+                />
 
-                    <div >
-                        <Link to={`/message/${user._id}`} className="btn primary">Message</Link>
-                        <button className="btn">Follow</button>
-                    </div>
+                {/* User Info */}
+                <h2>{user.FirstName} {user.LastName}</h2>
+
+                <div className="study">
+                    {user.Field_of_study || 'Student'}
                 </div>
-            </div>
 
-            <section >
-                <h3>Conversations</h3>
-                {conversations.length === 0 && <div className="no-conv">No conversations to show.</div>}
-                <ul>
-                    {conversations.map((c) => (
-                        <li key={c._id} className="conv-item">
-                            <Link to={`/chat/${c._id}`}>
-                                <div className="conv-title">{c.Theme_id?.Name || c.Theme_id?.name || `Conversation ${c._id}`}</div>
-                                <div className="conv-last">{Array.isArray(c.Messages) && c.Messages.length ? c.Messages[c.Messages.length-1].content : 'No messages yet'}</div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </section>
+                <div className="email">@{user.Username} • {user.email}</div>
+
+                {/* Details Section */}
+                <section>
+                    <h3>Details</h3>
+                    <ul>
+                        <li><strong>University:</strong> {user.University_name || '—'}</li>
+                        <li><strong>Field of Study:</strong> {user.Field_of_study || '—'}</li>
+                        <li><strong>Gender:</strong> {user.Gender || '—'}</li>
+                        <li><strong>Email:</strong> {user.email || '—'}</li>
+                        <li><strong>User Type:</strong> {user.Type_User || 'User'}</li>
+                    </ul>
+                </section>
+
+            </div>
         </div>
     );
 }
 
 export default Profil;
-

@@ -1,13 +1,49 @@
-/* Profil.css - Modern & Colorful Design (matching Chats.css) */
+/* Profil.css - Premium Modern Design */
+
+* {
+    box-sizing: border-box;
+}
+
 .profilcontainer {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     min-height: 100vh;
-    padding: 40px 20px;
+    padding: 60px 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.profilcontainer::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    animation: float 20s ease-in-out infinite;
+}
+
+.profilcontainer::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    animation: float 25s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(30px) translateX(20px); }
 }
 
 .profil {
@@ -15,16 +51,17 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    max-width: 500px;
+    max-width: 560px;
     width: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 255, 0.98) 100%);
-    padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.92);
+    padding: 60px 45px;
+    border-radius: 28px;
+    box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3), 0 0 60px rgba(245, 87, 108, 0.1);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
+    z-index: 10;
 }
 
 .profil::before {
@@ -33,126 +70,136 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #f5576c, #667eea);
-    animation: shimmer 3s infinite;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #667eea, #f5576c, #764ba2, transparent);
+    animation: shimmer 4s ease-in-out infinite;
+}
+
+.profil::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(102,126,234,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(245,87,108,0.03) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 @keyframes shimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
+    0%, 100% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
 }
 
 .profil img {
-    width: 140px;
-    height: 140px;
+    width: 180px;
+    height: 180px;
     object-fit: cover;
     border-radius: 50%;
-    border: 4px solid #667eea;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    border: 6px solid white;
+    margin-bottom: 28px;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4), 
+                inset 0 0 0 3px rgba(102, 126, 234, 0.2),
+                0 0 30px rgba(245, 87, 108, 0.2);
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.profil img:hover {
+    transform: scale(1.08) rotateZ(5deg);
+    box-shadow: 0 30px 80px rgba(102, 126, 234, 0.5), 
+                inset 0 0 0 3px rgba(102, 126, 234, 0.3),
+                0 0 50px rgba(245, 87, 108, 0.3);
 }
 
 .profil h2 {
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 8px;
-    font-weight: 800;
+    margin-top: 10px;
+    font-weight: 900;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     position: relative;
     z-index: 1;
+    letter-spacing: -0.5px;
 }
 
 .profil .study {
     font-size: 15px;
-    color: #666;
-    margin-bottom: 5px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 8px;
     position: relative;
     z-index: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(245, 87, 108, 0.08));
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
 }
 
 .profil .email {
     font-size: 14px;
     color: #888;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     position: relative;
     z-index: 1;
+    letter-spacing: 0.3px;
 }
 
 .profil .btn {
-    padding: 12px 28px;
-    margin: 8px;
-    border-radius: 25px;
+    padding: 14px 32px;
+    margin: 10px;
+    border-radius: 30px;
     border: none;
     cursor: pointer;
     font-size: 15px;
     text-decoration: none;
     transition: all 0.3s ease;
-    font-weight: 600;
+    font-weight: 700;
     position: relative;
     z-index: 1;
+    letter-spacing: 0.5px;
+    box-sizing: border-box;
 }
 
 .profil .btn.primary {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     color: white;
-    box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.35);
 }
 
 .profil .btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(245, 87, 108, 0.5);
+}
+
+.profil .btn.primary:active {
+    transform: translateY(-1px);
 }
 
 .profil .btn:not(.primary) {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
     color: #667eea;
-    border: 2px solid #667eea;
+    border: 2.5px solid #667eea;
 }
 
 .profil .btn:not(.primary):hover {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+    border-color: transparent;
 }
 
-
-section {
-    margin-top: 35px;
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid transparent;
-    border-image: linear-gradient(135deg, #667eea 0%, #f5576c 100%) 1;
-    position: relative;
-    z-index: 1;
+.profil .btn:not(.primary):active {
+    transform: translateY(-1px);
 }
 
-section h3 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    margin-top: 0;
-    font-weight: 700;
-    color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    border: none;
-    padding-bottom: 0;
-}
-
-.no-conv {
-    font-size: 14px;
-    color: #888;
-    text-align: center;
-    padding: 20px;
-}
 
 ul {
     list-style: none;
@@ -160,121 +207,223 @@ ul {
     margin: 0;
 }
 
-.conv-item {
-    padding: 15px 20px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-    border-image: linear-gradient(135deg, #667eea 0%, #f5576c 100%) 1;
+section {
+    margin-top: 45px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 255, 0.98) 100%);
+    padding: 38px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.15), 0 8px 24px rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(15px);
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
 }
 
-.conv-item:hover {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
-    transform: translateX(4px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+section::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(180deg, #667eea 0%, #f5576c 100%);
+    border-radius: 20px 0 0 20px;
 }
 
-.conv-title {
-    font-weight: 700;
-    margin-bottom: 5px;
+section:hover {
+    box-shadow: 0 25px 70px rgba(102, 126, 234, 0.2), 0 12px 36px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+}
+
+section h3 {
+    font-size: 22px;
+    margin-bottom: 24px;
+    margin-top: 0;
+    font-weight: 850;
     color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    border: none;
+    padding-bottom: 0;
+    letter-spacing: -0.3px;
+    position: relative;
+    padding-left: 16px;
+}
+
+section h3::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(180deg, #667eea 0%, #f5576c 100%);
+    border-radius: 2px;
+}
+
+section ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+section ul li {
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.06) 100%);
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1.5px solid rgba(102, 126, 234, 0.12);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+section ul li::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(245, 87, 108, 0.05) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+section ul li:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+    border-color: rgba(102, 126, 234, 0.3);
+    transform: translateX(6px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+}
+
+section ul li:hover::before {
+    opacity: 1;
+}
+
+section ul li strong {
+    font-weight: 750;
+    color: #667eea;
+    min-width: 140px;
+    text-align: left;
     font-size: 15px;
 }
 
-.conv-last {
-    font-size: 13px;
-    color: #666;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .profilcontainer {
-        padding: 25px 15px;
+        padding: 35px 12px;
     }
 
     .profil {
-        padding: 30px 20px;
+        padding: 40px 28px;
+        border-radius: 22px;
     }
 
     .profil img {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
+        margin-bottom: 20px;
     }
 
     .profil h2 {
-        font-size: 24px;
+        font-size: 28px;
+        margin-bottom: 10px;
     }
 
-    .profil .btn {
-        padding: 10px 20px;
+    .profil .study {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .profil .email {
         font-size: 14px;
-        margin: 6px;
+        margin-bottom: 24px;
     }
 
     section {
-        padding: 20px;
+        padding: 28px 30px;
+        margin-top: 35px;
     }
 
     section h3 {
-        font-size: 16px;
+        font-size: 18px;
+        margin-bottom: 18px;
+        padding-left: 12px;
     }
 
-    .conv-item {
-        padding: 12px 15px;
+    section ul li {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    section ul li strong {
+        min-width: 110px;
     }
 }
 
 @media (max-width: 480px) {
     .profilcontainer {
-        padding: 15px 10px;
+        padding: 25px 8px;
     }
 
     .profil {
-        padding: 25px 15px;
+        padding: 30px 18px;
+        border-radius: 18px;
     }
 
     .profil img {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 16px;
     }
 
     .profil h2 {
-        font-size: 20px;
+        font-size: 24px;
+        margin-bottom: 8px;
     }
 
-    .profil .study,
+    .profil .study {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
     .profil .email {
         font-size: 13px;
-    }
-
-    .profil .btn {
-        padding: 8px 16px;
-        font-size: 13px;
-        margin: 4px;
-        width: calc(50% - 4px);
+        margin-bottom: 20px;
     }
 
     section {
-        margin-top: 25px;
-        padding: 15px;
+        padding: 22px 20px;
+        margin-top: 28px;
+        border-radius: 16px;
     }
 
     section h3 {
-        font-size: 15px;
-        margin-bottom: 12px;
+        font-size: 16px;
+        margin-bottom: 16px;
+        padding-left: 10px;
     }
 
-    .conv-item {
+    section ul {
+        gap: 10px;
+    }
+
+    section ul li {
         padding: 10px 12px;
+        font-size: 13px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 
-    .conv-title {
-        font-size: 14px;
-    }
-
-    .conv-last {
-        font-size: 12px;
+    section ul li strong {
+        min-width: auto;
     }
 }

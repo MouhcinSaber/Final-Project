@@ -45,16 +45,17 @@ function Otherprofiles() {
             <h2>
                 Profile of {user.FirstName} {user.LastName}
             </h2>
+             {user.Profile_picture && (
+                <div>
+                    <img src={user.Profile_picture} alt="Profile" width={150} />
+                </div>
+            )}
             <p>Username: {user.Username}</p>
             <p>Email: {user.email}</p>
             <p>Field of Study: {user.Field_of_study}</p>
             <p>University: {user.University_name}</p>
             <p>Gender: {user.Gender}</p>
-            {user.Profile_picture && (
-                <div>
-                    <img src={user.Profile_picture} alt="Profile" width={150} />
-                </div>
-            )}
+           
         </div>
     );
 }
